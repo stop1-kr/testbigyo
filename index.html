@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>결혼 프로젝트 · 5차시 수업</title>
+<link rel="stylesheet" href="css/style.css"></head><body>
+<header class="top"><div class="inner"><span class="home">결혼 프로젝트</span>
+<span style="font-size:14px;color:#6b7280">중학교 3학년 · 5차시</span><span class="who" id="who"></span></div></header>
+<div class="wrap">
+  <h1>돈 모아 결혼하기 프로젝트</h1>
+  <p class="lead">모으기만 해서는 너무 늦게 결혼하게 됩니다. 과거의 주식·금·현금·부동산 자료로 투자해서
+  <b>결혼 나이를 내가 원하는 나이로 줄이는 것</b>이 이 프로젝트의 목표입니다.</p>
+
+  <section class="card">
+    <div class="card-head"><h2>내 정보</h2></div>
+    <div class="grid2">
+      <div><label class="flabel" for="cls">반 / 번호</label><input type="text" id="cls" placeholder="예) 3학년 2반 11번"></div>
+      <div><label class="flabel" for="name">이름</label><input type="text" id="name" placeholder="예) 김하늘"></div>
+    </div>
+    <p class="hint">입력한 내용은 <b>이 기기(브라우저)에만</b> 저장됩니다. 수업이 끝나면 아래에서 기록을 백업해 두세요.</p>
+  </section>
+
+  <div class="lessons" id="lessons"></div>
+
+  <section class="card" style="margin-top:16px">
+    <div class="card-head"><h2>기록 관리</h2></div>
+    <div class="toolbar">
+      <button class="btn primary" id="exp">내 기록 백업하기(JSON)</button>
+      <label class="btn" style="display:inline-block">기록 불러오기<input type="file" id="imp" accept="application/json" style="display:none"></label>
+      <button class="btn" id="rst">모두 지우기</button>
+    </div>
+    <p class="hint" id="msg">아이패드를 바꾸거나 사파리 기록을 지우면 입력이 사라질 수 있습니다.</p>
+  </section>
+</div>
+<script src="js/store.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var L=[
+    ['1','결혼하게 될 나이 계산하기','직업을 조사하고, 저축만 했을 때 몇 살에 결혼하게 되는지 계산합니다.'],
+    ['2','결혼 비용 버는 시간 줄이기','저축률을 조정하고 목표 수익률을 계산합니다.'],
+    ['3','결혼 비용을 위해 투자 도전하기','과거 실제 자료로 투자 시뮬레이션을 해 봅니다.'],
+    ['4','안정적인 투자 계획 세우기','수익과 위험을 함께 따져 계획을 고칩니다.'],
+    ['5','성공한 투자자 되기','나만의 최종 투자 계획을 정리하고 발표합니다.']
+  ];
+  var box=$('lessons');
+  L.forEach(function(x){
+    var p=WPStore.progress('lesson'+x[0]);
+    var a=document.createElement('a');
+    a.className='lesson-card'; a.href='lesson'+x[0]+'.html';
+    a.innerHTML='<div class="n">'+x[0]+'차시</div><div class="t">'+x[1]+'</div><div class="d">'+x[2]+'</div>'+
+      '<div class="bar"><i style="width:'+p+'%"></i></div><div class="pct">입력 진행률 '+p+'%</div>';
+    box.appendChild(a);
+  });
+  var st=WPStore.student();
+  $('cls').value=st.cls||''; $('name').value=st.name||'';
+  $('who').textContent=(st.cls||'')+' '+(st.name||'');
+  $('cls').addEventListener('input',function(){WPStore.setStudent('cls',$('cls').value);});
+  $('name').addEventListener('input',function(){WPStore.setStudent('name',$('name').value);});
+  $('exp').addEventListener('click',function(){WPStore.exportJSON();});
+  $('imp').addEventListener('change',function(e){
+    if(!e.target.files[0])return;
+    WPStore.importJSON(e.target.files[0],function(ok){
+      $('msg').textContent=ok?'불러왔습니다. 화면을 새로고침합니다.':'파일을 읽을 수 없습니다.';
+      if(ok) setTimeout(function(){location.reload();},600);
+    });
+  });
+  $('rst').addEventListener('click',function(){
+    if(confirm('저장된 모든 입력을 지울까요? 되돌릴 수 없습니다.')){WPStore.reset();location.reload();}
+  });
+})();
+</script>
+</body></html>

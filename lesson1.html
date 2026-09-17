@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>1차시 · 결혼하게 될 나이 계산하기</title>
+<link rel="stylesheet" href="css/style.css">
+<style>.flash{animation:none;background:#fffbe6;transition:background .35s;}</style>
+</head>
+<body>
+<header class="top">
+  <div class="inner">
+    <a class="home" href="index.html">← 프로젝트 홈</a>
+    <span style="font-size:14px;color:#6b7280">1차시 · 결혼하게 될 나이 계산하기</span>
+    <span class="who" id="who"></span>
+  </div>
+</header>
+
+<div class="wrap">
+  <h1>결혼하게 될 나이 계산하기</h1>
+  <p class="lead">내가 하고 싶은 직업을 조사하고, 그 직업으로 돈을 모았을 때 <b>몇 살에 결혼할 수 있는지</b> 계산해 봅시다.
+  입력한 내용은 이 기기에 자동으로 저장됩니다.</p>
+
+  <!-- ======================= 1단계 ======================= -->
+  <section class="card">
+    <div class="card-head"><span class="step-no">1단계</span><h2>직업에 대한 정보 구하기</h2></div>
+
+    <div class="field">
+      <label for="job">관심 있는 직업</label>
+      <div class="inline">
+        <input class="grow" type="text" id="job" data-save="job" list="joblist" placeholder="예) 소프트웨어 개발자" autocomplete="off">
+        <button type="button" class="btn small ghost" id="refill">참고 정보 다시 불러오기</button>
+      </div>
+      <datalist id="joblist"></datalist>
+      <p class="hint" id="jobmsg">목록에 있는 직업을 고르면 아래 세 칸(관련 학과·평균 연봉·직업 만족도)이 <b>자동으로 새로 채워집니다.</b> 직업을 바꾸면 값도 함께 바뀌며, 조사한 내용으로 직접 고쳐 써도 됩니다.</p>
+      <div class="chips">
+        <a class="chip" href="https://www.career.go.kr/cnet/front/base/job/jobView.do" target="_blank" rel="noopener">커리어넷에서 직업 찾기</a>
+        <a class="chip" href="https://www.google.com/search?q=" target="_blank" rel="noopener" id="searchlink">직업 이름으로 검색하기</a>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="major">관련 학과</label>
+      <input type="text" id="major" data-save="major" placeholder="예) 컴퓨터공학과">
+    </div>
+
+    <div class="field">
+      <label for="salary">평균 연봉</label>
+      <div class="inline">
+        <input class="grow" type="number" id="salary" data-save="salary" inputmode="numeric" placeholder="예) 6000">
+        <span class="unit">만원 / 년</span>
+      </div>
+      <p class="hint" id="salaryhint"></p>
+    </div>
+
+    <div class="field">
+      <label for="satisfaction">직업 만족도 <span class="unit">(100점 만점)</span></label>
+      <div class="inline">
+        <input class="grow" type="number" id="satisfaction" data-save="satisfaction" inputmode="numeric" min="0" max="100" placeholder="예) 71">
+        <span class="unit">점</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="reason">이 직업이 마음에 드는 이유</label>
+      <textarea id="reason" data-save="reason" placeholder="어떤 점이 좋은지, 나의 어떤 성격·관심과 잘 맞는지 써 봅시다."></textarea>
+    </div>
+  </section>
+
+  <!-- ======================= 2단계 ======================= -->
+  <section class="card">
+    <div class="card-head"><span class="step-no">2단계</span><h2>결혼하게 될 나이 계산해보기</h2></div>
+    <p class="hint" style="margin-bottom:6px">아래 <b>성별·지역</b>을 고르면 ①·⑥·⑦ 칸이 평균값으로 <b>다시 채워집니다.</b> 그 뒤 내 생각대로 자유롭게 고쳐 쓰세요.</p>
+    <div class="grid2" style="margin:10px 0 4px">
+      <div>
+        <label class="flabel" for="gender">성별</label>
+        <select id="gender" data-save="gender">
+          <option value="">선택하기</option><option value="m">남자</option><option value="f">여자</option>
+        </select>
+      </div>
+      <div>
+        <label class="flabel" for="region">결혼할 지역</label>
+        <select id="region" data-save="region">
+          <option value="">선택하기</option><option value="seoul">서울</option><option value="local">지방</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="startAge"><span class="num">①</span>내가 처음으로 취직하게 될 나이</label>
+      <div class="inline"><input class="grow" type="number" id="startAge" data-save="startAge" inputmode="decimal" step="0.5" placeholder="예) 32"><span class="unit">세</span></div>
+      <div class="chips">
+        <button type="button" class="chip" data-set="startAge" data-val="32"><b>참고 · 평균 신입사원 나이(남) 32세</b></button>
+        <button type="button" class="chip" data-set="startAge" data-val="29.5"><b>참고 · 평균 신입사원 나이(여) 29.5세</b></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="preSave"><span class="num">②</span>내가 취직 전에 저축하게 될 돈</label>
+      <div class="inline"><input class="grow" type="number" id="preSave" data-save="preSave" inputmode="numeric" placeholder="예) 3000"><span class="unit">만원</span></div>
+      <div class="chips">
+        <button type="button" class="chip" data-set="preSave" data-val="161"><b>참고 · 19세 이하 계좌 잔고 평균 161만원</b><span class="sub">(특이값이 있기 때문에 중앙값을 추측해서 계산해보기)</span></button>
+        <span class="chip" style="cursor:default;background:#f3f4f6;border-color:#e5e7eb;color:#374151"><b>참고 · 20~24세 중위연봉 세후 210만원</b><span class="sub">대학생·사회 초년 시기 수입 참고</span></span>
+        <span class="chip" style="cursor:default;background:#f3f4f6;border-color:#e5e7eb;color:#374151"><b>참고 · 25~29세 중위연봉 세후 250만원</b><span class="sub">취업 준비·초기 직장 시기 수입 참고</span></span>
+        <span class="chip" style="cursor:default;background:#f3f4f6;border-color:#e5e7eb;color:#374151"><b>참고 · 아르바이트 2030년 예상 최저시급 12,000원</b></span>
+      </div>
+      <div class="example">
+        <b>계산 예시</b><br>
+        (19세 이하 계좌 잔고 평균 161만원) + (일주일 8시간 아르바이트 8×12,000원)×(대학교 4년) + (군대 평균 저축 액수 1,000만원) + (일주일 20시간 아르바이트 20×12,000원)×(취업준비생 2년) − (여행, 쇼핑, 생활비 등 소비)
+      </div>
+      <details class="helper">
+        <summary>계산 예시대로 직접 계산해 보기</summary>
+        <div class="body">
+          <div class="grid3">
+            <div><label class="flabel" style="font-size:13px">지금까지 모은 돈(만원)</label><input type="number" id="hNow" value="161"></div>
+            <div><label class="flabel" style="font-size:13px">시급(원)</label><input type="number" id="hWage" value="12000"></div>
+            <div><label class="flabel" style="font-size:13px">군대 저축(만원)</label><input type="number" id="hArmy" value="1000"></div>
+            <div><label class="flabel" style="font-size:13px">대학생 주당 시간</label><input type="number" id="hH1" value="8"></div>
+            <div><label class="flabel" style="font-size:13px">대학교 기간(년)</label><input type="number" id="hY1" value="4"></div>
+            <div><label class="flabel" style="font-size:13px">취준생 주당 시간</label><input type="number" id="hH2" value="20"></div>
+            <div><label class="flabel" style="font-size:13px">취준 기간(년)</label><input type="number" id="hY2" value="2"></div>
+            <div><label class="flabel" style="font-size:13px">쓰게 될 돈(만원)</label><input type="number" id="hSpend" value="0"></div>
+          </div>
+          <div class="formula" id="hResult"></div>
+          <div class="toolbar"><button type="button" class="btn primary" id="hApply">이 값을 ②번 칸에 넣기</button></div>
+          <p class="hint">1년 = 52주로 계산합니다. 아르바이트를 쉬는 기간, 세금, 소비를 생각해서 숫자를 바꿔 보세요.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="field">
+      <label for="monthlyPay"><span class="num">③</span>내가 취직하면 받게 될 월급 <span class="unit">(세후)</span></label>
+      <div class="inline"><input class="grow" type="number" id="monthlyPay" data-save="monthlyPay" inputmode="numeric" placeholder="예) 290"><span class="unit">만원 / 월</span></div>
+      <div class="chips">
+        <button type="button" class="btn primary small" id="fromSalary">1단계 연봉으로 계산하기</button>
+        <button type="button" class="chip" data-set="monthlyPay" data-val="290"><b>참고 · 30~34세 중위연봉 세후 290만원</b></button>
+      </div>
+      <p class="hint" id="payhint">연봉에서 세금·4대보험을 빼면 대략 85% 정도가 손에 들어옵니다. → (연봉 × 0.85) ÷ 12</p>
+    </div>
+
+    <div class="field">
+      <label for="monthlySave"><span class="num">④</span>내가 취직하면 한 달에 저축할 수 있는 돈</label>
+      <div class="inline"><input class="grow" type="number" id="monthlySave" data-save="monthlySave" inputmode="numeric" placeholder="예) 87"><span class="unit">만원 / 월</span></div>
+      <div class="chips">
+        <button type="button" class="chip" data-rate="8.2"><b>참고 · 1인 가구 평균 저축률 8.2%</b></button>
+        <button type="button" class="chip" data-rate="30"><b>저축률 30%로 계산</b></button>
+        <button type="button" class="chip" data-rate="50"><b>저축률 50%로 계산</b></button>
+        <button type="button" class="chip" data-rate="70"><b>저축률 70%로 계산</b></button>
+      </div>
+      <div class="formula" id="saveFormula"></div>
+    </div>
+
+    <div class="field">
+      <label for="yearlySave"><span class="num">⑤</span>내가 취직하면 1년에 저축할 수 있는 돈 <span class="unit">(자동 계산)</span></label>
+      <div class="inline"><input class="grow" type="number" id="yearlySave" data-save="yearlySave" readonly><span class="unit">만원 / 년</span></div>
+      <div class="formula" id="yearFormula"></div>
+    </div>
+
+    <div class="field">
+      <label for="wishAge"><span class="num">⑥</span>내가 결혼하고 싶은 나이</label>
+      <div class="inline"><input class="grow" type="number" id="wishAge" data-save="wishAge" inputmode="decimal" step="0.5" placeholder="예) 32"><span class="unit">세</span></div>
+      <div class="chips">
+        <button type="button" class="chip" data-set="wishAge" data-val="34"><b>참고 · 평균 초혼 연령(남) 34세</b></button>
+        <button type="button" class="chip" data-set="wishAge" data-val="31.5"><b>참고 · 평균 초혼 연령(여) 31.5세</b></button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="weddingCost"><span class="num">⑦</span>내가 결혼할 때 쓰게 될 비용 <span class="unit">(집 마련 비용 포함)</span></label>
+      <div class="inline"><input class="grow" type="number" id="weddingCost" data-save="weddingCost" inputmode="numeric" placeholder="예) 40000"><span class="unit">만원</span></div>
+      <div class="chips">
+        <button type="button" class="chip" data-set="weddingCost" data-val="40000"><b>참고 · 평균 결혼비용 서울 4억원</b><span class="sub">40,000만원</span></button>
+        <button type="button" class="chip" data-set="weddingCost" data-val="30000"><b>참고 · 평균 결혼비용 지방 3억원</b><span class="sub">30,000만원</span></button>
+      </div>
+      <div class="inline" style="margin-top:10px">
+        <span class="unit">이 중 내가 준비할 비율</span>
+        <input type="number" id="myRatio" data-save="myRatio" value="50" min="0" max="100" step="5" style="max-width:120px">
+        <span class="unit">%</span>
+      </div>
+      <div class="formula" id="costFormula"></div>
+    </div>
+
+    <div class="field">
+      <label><span class="num">⑧</span>취직해서 결혼 비용을 모을 때까지 걸리는 시간 <span class="unit">(자동 계산)</span></label>
+      <div class="inline"><input class="grow" type="text" id="years" readonly><span class="unit">년</span></div>
+    </div>
+
+    <div class="field">
+      <label><span class="num">⑨</span>실제로 결혼하게 될 나이 <span class="unit">(자동 계산)</span></label>
+      <div class="inline"><input class="grow" type="text" id="realAge" readonly><span class="unit">세</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= 결과 ======================= -->
+  <section class="card">
+    <div class="card-head"><h2>내 계산 결과</h2></div>
+    <div class="tiles">
+      <div class="tile"><div class="t">내가 모아야 하는 돈</div><div class="v small" id="tNeed">-</div></div>
+      <div class="tile"><div class="t">1년에 모으는 돈</div><div class="v small" id="tYear">-</div></div>
+      <div class="tile"><div class="t">모으는 데 걸리는 시간</div><div class="v" id="tYears">-</div></div>
+      <div class="tile warn"><div class="t">실제 결혼 나이</div><div class="v" id="tAge">-</div></div>
+    </div>
+    <div class="formula" id="mainFormula">칸을 채우면 계산식이 나타납니다.</div>
+    <svg class="timeline" id="tl" viewBox="0 0 900 132" preserveAspectRatio="xMidYMid meet" role="img" aria-label="나이 타임라인"></svg>
+    <div class="verdict" id="verdict">①~⑦번을 모두 채우면 결과를 알려줍니다.</div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>오늘의 정리</h2></div>
+    <label class="flabel" for="note">계산해 보고 든 생각을 써 봅시다.</label>
+    <textarea id="note" data-save="note" placeholder="예) 열심히 저축만 해서는 원하는 나이에 결혼하기 어렵다는 것을 알았다. 그래서 다음 시간에는 …"></textarea>
+    <div class="toolbar">
+      <button type="button" class="btn primary" id="copyBtn">결과 요약 복사하기</button>
+      <button type="button" class="btn" onclick="window.print()">인쇄 / PDF로 저장</button>
+      <a class="btn" href="lesson2.html" style="text-decoration:none;display:inline-block">2차시로 가기 →</a>
+    </div>
+    <p class="savednote" id="savednote">입력은 자동 저장됩니다.</p>
+  </section>
+</div>
+
+<script src="js/jobs-data.js"></script>
+<script src="js/store.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var num = function (id) { var v = parseFloat(($(id).value || '').toString().replace(/,/g, '')); return isNaN(v) ? null : v; };
+
+  /* ---------- 표시 helper ---------- */
+  function comma(n) { return Math.round(n).toLocaleString('ko-KR'); }
+  function won(man) {                       /* 만원 단위 숫자를 한국식으로 */
+    if (man === null || isNaN(man)) return '-';
+    if (Math.abs(man) >= 10000) {
+      var eok = Math.floor(man / 10000), rest = Math.round(man - eok * 10000);
+      return eok + '억' + (rest ? ' ' + comma(rest) + '만원' : '원');
+    }
+    return comma(man) + '만원';
+  }
+
+  /* ---------- 1단계 : 직업 자동 채움 ---------- */
+  var jobs = window.JOBS || [];
+  var map = {};
+  var dl = $('joblist');
+  jobs.forEach(function (j) {
+    map[j.name] = j;
+    var o = document.createElement('option'); o.value = j.name; dl.appendChild(o);
+  });
+
+  var lastFilled = '';
+  function fillJob(force) {
+    var name = ($('job').value || '').trim();
+    $('searchlink').href = 'https://www.google.com/search?q=' + encodeURIComponent(name + ' 직업 하는 일 연봉');
+    var j = map[name];
+    if (!j) {
+      if (name) $('jobmsg').innerHTML = '목록에 없는 직업입니다. <b>아래 세 칸은 직접 조사해서 적어 주세요.</b>';
+      return false;
+    }
+    if (!force && name === lastFilled) return false;   /* 같은 직업이면 다시 덮어쓰지 않음 */
+    lastFilled = name;
+    setVal($('major'), j.major);
+    setVal($('salary'), j.salary);
+    setVal($('satisfaction'), j.satisfaction);
+    $('jobmsg').innerHTML = '<b>' + name + '</b> 참고 정보를 새로 불러왔습니다. 조사한 값이 다르면 직접 고쳐 쓰세요.';
+    return true;
+  }
+  $('job').addEventListener('input', function () { fillJob(false); });
+  $('job').addEventListener('change', function () { fillJob(false); });
+  $('refill').addEventListener('click', function () {
+    if (!fillJob(true)) { $('jobmsg').textContent = '목록에 있는 직업 이름을 정확히 입력해야 참고 정보를 불러올 수 있습니다.'; }
+  });
+  $('salary').addEventListener('input', function () {
+    var s = num('salary');
+    $('salaryhint').textContent = s ? ('세후 월급으로 어림하면 약 ' + comma(s * 0.85 / 12) + '만원 / 월') : '';
+  });
+
+  /* ---------- 참고 칩 : 값 넣기 ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-set]'), function (b) {
+    b.addEventListener('click', function () { setVal($(b.getAttribute('data-set')), b.getAttribute('data-val')); });
+  });
+
+  /* ---------- ③ 1단계 연봉으로 계산 ---------- */
+  $('fromSalary').addEventListener('click', function () {
+    var s = num('salary');
+    if (!s) { $('payhint').innerHTML = '<b>먼저 1단계의 평균 연봉을 적어 주세요.</b>'; return; }
+    var m = Math.round(s * 0.85 / 12);
+    setVal($('monthlyPay'), m);
+    $('payhint').innerHTML = '연봉 ' + comma(s) + '만원 × 0.85 ÷ 12개월 = <b>' + comma(m) + '만원 / 월</b>';
+  });
+
+  /* ---------- ④ 저축률 버튼 ---------- */
+  var lastRate = null;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-rate]'), function (b) {
+    b.addEventListener('click', function () {
+      var pay = num('monthlyPay');
+      if (!pay) { $('saveFormula').innerHTML = '<b>먼저 ③번 월급을 적어 주세요.</b>'; return; }
+      lastRate = parseFloat(b.getAttribute('data-rate'));
+      setVal($('monthlySave'), Math.round(pay * lastRate / 100 * 10) / 10);
+    });
+  });
+
+  /* ---------- ② 계산 도우미 ---------- */
+  function helper() {
+    var now = parseFloat($('hNow').value) || 0, wage = parseFloat($('hWage').value) || 0,
+        army = parseFloat($('hArmy').value) || 0, h1 = parseFloat($('hH1').value) || 0,
+        y1 = parseFloat($('hY1').value) || 0, h2 = parseFloat($('hH2').value) || 0,
+        y2 = parseFloat($('hY2').value) || 0, spend = parseFloat($('hSpend').value) || 0;
+    var a1 = h1 * wage * 52 * y1 / 10000;     /* 만원 */
+    var a2 = h2 * wage * 52 * y2 / 10000;
+    var total = now + a1 + army + a2 - spend;
+    $('hResult').innerHTML =
+      comma(now) + '만원 + (' + h1 + '시간 × ' + comma(wage) + '원 × 52주 × ' + y1 + '년 = ' + comma(a1) + '만원)'
+      + ' + ' + comma(army) + '만원'
+      + ' + (' + h2 + '시간 × ' + comma(wage) + '원 × 52주 × ' + y2 + '년 = ' + comma(a2) + '만원)'
+      + ' − ' + comma(spend) + '만원 = <b>' + comma(total) + '만원</b>';
+    return Math.round(total);
+  }
+  ['hNow','hWage','hArmy','hH1','hY1','hH2','hY2','hSpend'].forEach(function (id) {
+    $(id).addEventListener('input', helper);
+  });
+  $('hApply').addEventListener('click', function () { setVal($('preSave'), helper()); });
+  helper();
+
+  /* ---------- 성별·지역 선택 시 기본값 다시 채우기 ---------- */
+  $('gender').addEventListener('change', function () {
+    var g = $('gender').value; if (!g) return;
+    setVal($('startAge'), g === 'm' ? 32 : 29.5);
+    setVal($('wishAge'), g === 'm' ? 34 : 31.5);
+  });
+  $('region').addEventListener('change', function () {
+    var r = $('region').value; if (!r) return;
+    setVal($('weddingCost'), r === 'seoul' ? 40000 : 30000);
+  });
+
+  /* ---------- 타임라인 ---------- */
+  function drawTimeline(start, wish, real) {
+    var svg = $('tl'); svg.innerHTML = '';
+    var W = 900, x0 = 45, x1 = 855, y = 74;
+    var pts = [15];
+    if (start) pts.push(start);
+    if (wish) pts.push(wish);
+    var over = (real !== null && real > 100);
+    if (real !== null) pts.push(Math.min(real, 100));
+    var maxA = Math.max.apply(null, pts) + 3, minA = 14;
+    var sx = function (a) { return x0 + (Math.min(a, 100) - minA) / (maxA - minA) * (x1 - x0); };
+    function el(t, at) { var e = document.createElementNS('http://www.w3.org/2000/svg', t); for (var k in at) e.setAttribute(k, at[k]); return e; }
+    svg.appendChild(el('line', { x1: x0, y1: y, x2: x1, y2: y, stroke: '#d8dce3', 'stroke-width': 3 }));
+    function mark(a, label, color, up) {
+      if (a === null || isNaN(a)) return;
+      var x = sx(a);
+      svg.appendChild(el('line', { x1: x, y1: y - 13, x2: x, y2: y + 13, stroke: color, 'stroke-width': 3 }));
+      var c = el('circle', { cx: x, cy: y, r: 6, fill: color }); svg.appendChild(c);
+      var t1 = el('text', { x: x, y: up ? y - 24 : y + 32, 'text-anchor': 'middle', 'font-size': 14, fill: '#374151' });
+      t1.textContent = label; svg.appendChild(t1);
+      var t2 = el('text', { x: x, y: up ? y - 42 : y + 50, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 700, fill: color });
+      t2.textContent = (a === Math.round(a) ? a : a.toFixed(1)) + '세' + (up === false && over && a === 100 ? '+' : '');
+      svg.appendChild(t2);
+    }
+    mark(15, '지금', '#6b7280', true);
+    if (start) mark(start, '취직', '#1d4ed8', false);
+    if (wish) mark(wish, '결혼하고 싶은 나이', '#15803d', true);
+    if (real !== null) {
+      var shown = Math.min(real, 100);
+      mark(shown, over ? '실제 결혼 나이(화면 밖)' : '실제 결혼 나이', '#b91c1c', false);
+      if (over) {
+        var w = el('text', { x: x1, y: 20, 'text-anchor': 'end', 'font-size': 14, fill: '#b91c1c', 'font-weight': 700 });
+        w.textContent = '실제로는 ' + real.toFixed(1) + '세 — 그래프 밖으로 벗어납니다';
+        svg.appendChild(w);
+      }
+    }
+  }
+
+  /* ---------- 전체 계산 ---------- */
+  function calc() {
+    var start = num('startAge'), pre = num('preSave'), pay = num('monthlyPay'),
+        ms = num('monthlySave'), wish = num('wishAge'), cost = num('weddingCost'),
+        ratio = num('myRatio');
+    if (ratio === null) ratio = 50;
+
+    /* ④ 계산식 */
+    if (pay && ms !== null) {
+      var r = Math.round(ms / pay * 1000) / 10;
+      $('saveFormula').innerHTML = '(③ 월급 ' + comma(pay) + '만원) × (저축률 ' + r + '%) = <b>' + comma(ms) + '만원 / 월</b>';
+    } else if (pay) {
+      $('saveFormula').innerHTML = '(③ 월급 ' + comma(pay) + '만원) × (저축률 %) = 한 달 저축액 — 위 버튼을 눌러 보세요.';
+    } else {
+      $('saveFormula').innerHTML = '(③ 월급) × (저축률) = 한 달에 저축할 수 있는 돈';
+    }
+
+    /* ⑤ 연 저축 */
+    var yearly = (ms !== null) ? Math.round(ms * 12 * 10) / 10 : null;
+    $('yearlySave').value = (yearly !== null) ? yearly : '';
+    if (yearly !== null) WPStore.set('lesson1', 'yearlySave', yearly);
+    $('yearFormula').innerHTML = (ms !== null)
+      ? '(④ 한 달 저축 ' + comma(ms) + '만원) × 12개월 = <b>' + comma(yearly) + '만원 / 년</b>'
+      : '(④ 한 달 저축) × 12개월 = 1년 저축액';
+
+    /* ⑦ 내가 준비할 금액 */
+    var myCost = (cost !== null) ? cost * ratio / 100 : null;
+    $('costFormula').innerHTML = (cost !== null)
+      ? '전체 결혼비용 ' + won(cost) + ' × ' + ratio + '% = <b>내가 준비할 돈 ' + won(myCost) + '</b>'
+      : '전체 결혼비용 × 내가 준비할 비율 = 내가 준비할 돈';
+
+    /* ⑧⑨ */
+    var need = null, years = null, real = null;
+    if (myCost !== null) { need = myCost - (pre || 0); $('tNeed').textContent = won(Math.max(need, 0)); }
+    else $('tNeed').textContent = '-';
+    $('tYear').textContent = (yearly !== null) ? won(yearly) : '-';
+
+    if (need !== null && yearly !== null && yearly > 0 && start !== null) {
+      if (need <= 0) { years = 0; real = start; }
+      else { years = need / yearly; real = start + years; }
+      $('years').value = years.toFixed(1);
+      $('realAge').value = real.toFixed(1);
+      $('tYears').textContent = years.toFixed(1) + '년';
+      $('tAge').textContent = real.toFixed(1) + '세';
+      $('mainFormula').innerHTML =
+        '① 모아야 하는 돈 = (결혼비용 ' + won(cost) + ' × ' + ratio + '%) − (취직 전 저축 ' + won(pre || 0) + ') = <b>' + won(Math.max(need, 0)) + '</b><br>' +
+        '② 걸리는 시간 = ' + comma(Math.max(need, 0)) + '만원 ÷ ' + comma(yearly) + '만원 = <b>' + years.toFixed(1) + '년</b><br>' +
+        '③ 실제 결혼 나이 = 취직 나이 ' + start + '세 + ' + years.toFixed(1) + '년 = <b>' + real.toFixed(1) + '세</b>';
+    } else {
+      $('years').value = ''; $('realAge').value = '';
+      $('tYears').textContent = '-'; $('tAge').textContent = '-';
+      $('mainFormula').textContent = '①~⑦번 칸을 모두 채우면 계산식이 나타납니다.';
+    }
+
+    /* 진단 */
+    var v = $('verdict'); v.className = 'verdict';
+    if (real !== null && wish !== null) {
+      var gap = real - wish;
+      if (gap <= 0) {
+        v.className = 'verdict good';
+        v.innerHTML = '목표 달성! 이대로라면 <b>' + real.toFixed(1) + '세</b>에 결혼할 수 있어 원하는 나이(' + wish + '세)보다 <b>' + Math.abs(gap).toFixed(1) + '년 빠릅니다.</b> 그렇다면 남는 돈으로 무엇을 더 할 수 있을지 생각해 봅시다.';
+      } else {
+        var canYears = wish - start;
+        var msg = '이대로 저축만 하면 <b>' + real.toFixed(1) + '세</b>에 결혼하게 되어, 원하고 있던 <b>' + wish + '세</b>보다 <b>' + gap.toFixed(1) + '년 늦습니다.</b>';
+        if (canYears > 0) {
+          var needYear = Math.max(need, 0) / canYears;
+          var needMonth = needYear / 12;
+          msg += '<br>원하는 나이에 결혼하려면 취직 후 <b>' + canYears.toFixed(1) + '년</b> 동안 1년에 <b>' + won(needYear) + '</b>(한 달 <b>' + comma(needMonth) + '만원</b>)을 모아야 합니다.';
+          if (pay) {
+            var needRate = needMonth / pay * 100;
+            msg += ' 이것은 월급의 <b>' + needRate.toFixed(0) + '%</b>' + (needRate > 100 ? ' — 즉 <b>월급을 다 모아도 불가능합니다.</b>' : '를 저축해야 한다는 뜻입니다.');
+          }
+        } else {
+          msg += '<br>원하는 결혼 나이가 취직 나이보다 빠르거나 같습니다. ①번과 ⑥번을 다시 확인해 보세요.';
+        }
+        msg += '<br>→ <b>저축만으로는 부족합니다. 다음 시간에는 돈이 스스로 불어나게 하는 방법(투자)을 배워 봅시다.</b>';
+        v.innerHTML = msg;
+      }
+    } else {
+      v.textContent = '①~⑦번을 모두 채우면 결과를 알려줍니다.';
+    }
+
+    drawTimeline(start, wish, real);
+  }
+
+  /* ---------- 저장 바인딩 ---------- */
+  WPStore.bind('lesson1', function () { calc(); });
+  var st = WPStore.student();
+  $('who').textContent = (st.cls ? st.cls + ' ' : '') + (st.name || '');
+  if (!$('myRatio').value) setVal($('myRatio'), 50);
+  lastFilled = ($('job').value || '').trim();
+  $('salary').dispatchEvent(new Event('input'));
+  calc();
+
+  /* ---------- 요약 복사 ---------- */
+  $('copyBtn').addEventListener('click', function () {
+    var t = [
+      '[1차시] 결혼하게 될 나이 계산하기 — ' + (st.cls || '') + ' ' + (st.name || ''),
+      '관심 직업: ' + $('job').value + ' / 관련 학과: ' + $('major').value,
+      '평균 연봉: ' + $('salary').value + '만원 / 직업 만족도: ' + $('satisfaction').value + '점',
+      '좋아하는 이유: ' + $('reason').value,
+      '① 취직 나이: ' + $('startAge').value + '세',
+      '② 취직 전 저축: ' + $('preSave').value + '만원',
+      '③ 월급(세후): ' + $('monthlyPay').value + '만원',
+      '④ 월 저축액: ' + $('monthlySave').value + '만원',
+      '⑤ 연 저축액: ' + $('yearlySave').value + '만원',
+      '⑥ 희망 결혼 나이: ' + $('wishAge').value + '세',
+      '⑦ 결혼비용: ' + $('weddingCost').value + '만원 (내가 준비할 비율 ' + $('myRatio').value + '%)',
+      '⑧ 모으는 기간: ' + $('years').value + '년',
+      '⑨ 실제 결혼 나이: ' + $('realAge').value + '세',
+      '오늘의 정리: ' + $('note').value
+    ].join('\n');
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(t).then(function () { $('savednote').textContent = '결과 요약을 복사했습니다. 학습지나 메모 앱에 붙여넣으세요.'; });
+    } else {
+      window.prompt('복사하세요', t);
+    }
+  });
+})();
+</script>
+</body>
+</html>
